@@ -7,6 +7,7 @@ import random
 from engine import get_best_move
 import utils
 
+# TODO set up the game itself
 class ChessGame:
     def __init__(self, board: Optional[chess.Board] = None):
         """Initialize the chess game with a new board or a given board."""

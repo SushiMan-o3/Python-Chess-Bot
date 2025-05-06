@@ -1,4 +1,5 @@
 import chess
+import utils
 
 PIECE_VALUES = {
         chess.PAWN: 1.00,
@@ -20,12 +21,7 @@ def evaluate(board: chess.Board) -> float:
             eval += PIECE_VALUES[piece.piece_type]
         else:
             eval -= PIECE_VALUES[piece.piece_type]
-        print(eval)
+
     return eval
-
-fen = "rnb1kbnr/ppp1pppp/4P3/8/2P5/8/PP1P1PPP/RNBQKBNR b KQkq - 0 4"
-
-board = chess.Board(fen=fen)
-print(evaluate(board))
 
 

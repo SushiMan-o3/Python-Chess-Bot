@@ -23,9 +23,18 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: int) -> che
                 return eval_of_pos - (original_depth - depth)
             else:
                 return eval_of_pos + (original_depth - depth)
+            
         if board.is_variant_draw():
             return 0, None
         
+        if (
+            board.is_stalemate()
+            or board.is_insufficient_material()
+            or board.can_claim_fifty_moves()
+            or board.can_claim_threefold_repetition()
+        ):
+            return 0, None
+
         if depth == 0:
             return eval_of_pos, None
         
@@ -39,7 +48,7 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: int) -> che
         
         for move in board.legal_moves:
             board.push(move)
-            score, _ = _helper(board, depth-1, chess.WHITE)
+            score, _ = _helper(board, depth-1, not current_player)
     
 
             if current_player == original_player:

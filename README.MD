@@ -8,4 +8,4 @@ A chess engine created in python by Sushim Malla that uses the minimax algorithm
 To use this bot, download the repository and install the nessacary requirements by opening cmd and typing in `pip install -r requirements.txt`.
 
 # Plans for the future
-The plans for the future for this bot is to host it on lichess where you can play the bot at any given moment. 
+Bot is being tested

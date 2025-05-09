@@ -4,22 +4,17 @@ from typing import Tuple
 import json
 import utils
 
-def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color) -> chess.Move:
+def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player: chess.Color) -> chess.Move:
     """
     Get the best move for the current player using a simple evaluation function.
     """
     original_player = maximizing_player
     original_depth = depth
     
-    def _helper(board: chess.Board, depth: int, current_player: chess.Color) -> Tuple[int, chess.Move]:
+    def _helper(board: chess.Board, depth: int, alpha, beta, current_player: chess.Color) -> Tuple[int, chess.Move]:
         """
         Helper that finds best move. Used for recurisve purposes. 
         """
-        eval_of_pos = evaluate(board)
-        
-        if current_player != original_player:
-            eval_of_pos *= -1
-
         if board.is_checkmate():
             if board.turn == original_player:
                 return -10000 + (original_depth - depth), None  # loss for current player
@@ -39,10 +34,14 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
             return 0, None
 
         if depth == 0:
+            eval_of_pos = evaluate(board)
+            if current_player != original_player:
+                eval_of_pos *= -1
             return eval_of_pos, None
+
         
         best_move = next(iter(board.legal_moves))
-
+        
         if current_player == original_player:
             best_score = float("-inf")
         else:
@@ -51,19 +50,23 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
         
         for move in board.legal_moves:
             board.push(move)
-            score, _ = _helper(board, depth-1, not current_player)
+            score, _ = _helper(board, depth-1, alpha, beta, not current_player)
     
-
             if current_player == original_player:
                 if score > best_score:
                     best_score = score
                     best_move = move
+                alpha = max(alpha, best_score)
             else:
                 if score < best_score:
                     best_score = score
                     best_move = move
+                beta = min(beta, best_score)
             
             board.pop()
+
+            if beta <= alpha:
+                break  
         
         return best_score, best_move
     
@@ -75,4 +78,4 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
     except FileNotFoundError:
         pass
 
-    return _helper(board, depth, maximizing_player)[1]
+    return _helper(board, depth, float("-inf"), float("inf"), maximizing_player)[1]

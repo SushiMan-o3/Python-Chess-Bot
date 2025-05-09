@@ -1,6 +1,5 @@
 import chess
 import utils
-import random
 
 PIECE_VALUES = {
         chess.PAWN: 100,
@@ -24,12 +23,6 @@ def evaluate(board: chess.Board) -> float:
         else:
             eval -= PIECE_VALUES[piece.piece_type]
 
-    if board.has_kingside_castling_rights(chess.WHITE) or board.has_queenside_castling_rights(chess.WHITE):
-        eval += 300
-    
-    if board.has_kingside_castling_rights(chess.BLACK) or board.has_queenside_castling_rights(chess.BLACK):
-        eval -= 300
-
-    return random.choice(board.legal_moves)
+    return eval
 
 

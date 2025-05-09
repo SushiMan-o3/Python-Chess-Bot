@@ -4,25 +4,28 @@ from typing import Tuple
 import json
 import utils
 
-def get_best_move(board: chess.Board, depth: int, maximizing_player: int) -> chess.Move:
+def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color) -> chess.Move:
     """
     Get the best move for the current player using a simple evaluation function.
     """
     original_player = maximizing_player
     original_depth = depth
     
-    def _helper(board: chess.Board, depth: int, current_player: int) -> Tuple[int, chess.Move]:
+    def _helper(board: chess.Board, depth: int, current_player: chess.Color) -> Tuple[int, chess.Move]:
         """
         Helper that finds best move. Used for recurisve purposes. 
         """
         eval_of_pos = evaluate(board)
+        
+        if current_player != original_player:
+            eval_of_pos *= -1
 
-        # TODO Base Cases
         if board.is_checkmate():
-            if eval_of_pos > 0:
-                return eval_of_pos - (original_depth - depth)
+            if board.turn == original_player:
+                return -10000 + (original_depth - depth), None  # loss for current player
             else:
-                return eval_of_pos + (original_depth - depth)
+                return 10000 - (original_depth - depth), None   # win for current player
+
             
         if board.is_variant_draw():
             return 0, None
@@ -67,7 +70,7 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: int) -> che
     try:
         with open('opening_book.json', 'r') as file:
             opening_book = json.load(file)
-            if board.fen in opening_book:
+            if board.fen() in opening_book:
                 return opening_book[board.fen]
     except FileNotFoundError:
         pass

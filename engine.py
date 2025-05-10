@@ -51,7 +51,7 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
         
         for move in board.legal_moves:
             board.push(move)
-            score, _ = _helper(board, depth-1, alpha, beta, board.turn)
+            score, _ = _helper(board, depth-1, alpha, beta, not current_player)
             board.pop()
 
             if current_player == original_player:

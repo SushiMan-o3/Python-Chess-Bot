@@ -2,9 +2,10 @@ import chess
 from evaluation import evaluate
 from typing import Tuple
 import json
-import utils
+from utils import evaluate_well
 
-def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player: chess.Color) -> chess.Move:
+
+def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color) -> chess.Move:
     """
     Get the best move for the current player using a simple evaluation function.
     """
@@ -16,11 +17,10 @@ def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player
         Helper that finds best move. Used for recurisve purposes. 
         """
         if board.is_checkmate():
-            if board.turn == original_player:
-                return -10000 + (original_depth - depth), None  # loss for current player
+            if current_player == original_player:
+                return -10000 + (original_depth - depth), None
             else:
-                return 10000 - (original_depth - depth), None   # win for current player
-
+                return 10000 - (original_depth - depth), None
             
         if board.is_variant_draw():
             return 0, None
@@ -35,9 +35,10 @@ def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player
 
         if depth == 0:
             eval_of_pos = evaluate(board)
-            if current_player != original_player:
-                eval_of_pos *= -1
-            return eval_of_pos, None
+            if current_player == original_player:
+                return eval_of_pos, None
+            else:
+                return -eval_of_pos, None
 
         
         best_move = next(iter(board.legal_moves))
@@ -50,8 +51,9 @@ def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player
         
         for move in board.legal_moves:
             board.push(move)
-            score, _ = _helper(board, depth-1, alpha, beta, not current_player)
-    
+            score, _ = _helper(board, depth-1, alpha, beta, board.turn)
+            board.pop()
+
             if current_player == original_player:
                 if score > best_score:
                     best_score = score
@@ -63,8 +65,6 @@ def get_best_move(board: chess.Board, depth: int, alpha, beta, maximizing_player
                     best_move = move
                 beta = min(beta, best_score)
             
-            board.pop()
-
             if beta <= alpha:
                 break  
         

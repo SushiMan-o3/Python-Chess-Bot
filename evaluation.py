@@ -1,5 +1,4 @@
 import chess
-import utils
 
 PIECE_VALUES = {
         chess.PAWN: 100,
@@ -9,6 +8,12 @@ PIECE_VALUES = {
         chess.QUEEN: 900,
         chess.KING: 0
     }
+
+COLOR_MULTIPLIER = {
+        chess.WHITE: 1,
+        chess.BLACK: -1
+    }
+
 
 def evaluate(board: chess.Board) -> float:
     """

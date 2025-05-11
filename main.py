@@ -38,7 +38,7 @@ def start():
             board = chess.Board()
 
         elif received.startswith("go"):
-            move = get_best_move(board, depth=3, maximizing_player=board.turn)
+            move = get_best_move(board, depth=5, maximizing_player=board.turn)
             print(f"bestmove {move.uci()}")
 
         elif received == "quit":

@@ -1,8 +1,7 @@
 import chess
-from evaluation import evaluate
+from evaluation import PIECE_VALUES, CHECKMATE, evaluate
 from typing import Tuple
 import json
-from utils import evaluate_well
 
 
 def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color) -> chess.Move:
@@ -18,9 +17,9 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
         """
         if board.is_checkmate():
             if current_player == original_player:
-                return -10000 + (original_depth - depth), None
+                return -CHECKMATE + (original_depth - depth), None
             else:
-                return 10000 - (original_depth - depth), None
+                return CHECKMATE - (original_depth - depth), None
             
         if board.is_variant_draw():
             return 0, None
@@ -40,16 +39,30 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
             else:
                 return -eval_of_pos, None
 
+        # sorts it based on captures and piece value to improve alpha beta pruning
+        legal_moves = sorted(
+            board.legal_moves,
+            key=lambda move: (
+                not board.is_capture(move),
+                -PIECE_VALUES.get(board.piece_type_at(move.to_square), 0),
+                PIECE_VALUES.get(board.piece_type_at(move.from_square), 0)
+            )
+        )
+
+
+        if legal_moves == []:
+            best_move = None
+        else:
+            best_move = legal_moves[0]
         
-        best_move = next(iter(board.legal_moves))
-        
+
         if current_player == original_player:
             best_score = float("-inf")
         else:
             best_score = float("inf")
 
-        
-        for move in board.legal_moves:
+    
+        for move in legal_moves:
             board.push(move)
             score, _ = _helper(board, depth-1, alpha, beta, not current_player)
             board.pop()
@@ -74,7 +87,7 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
         with open('opening_book.json', 'r') as file:
             opening_book = json.load(file)
             if board.fen() in opening_book:
-                return opening_book[board.fen]
+                return opening_book[board.fen()]
     except FileNotFoundError:
         pass
 

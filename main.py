@@ -13,8 +13,8 @@ def start():
             break
 
         if received == "uci":
-            print("id name SimpleEngine")
-            print("id author YourName")
+            print("id name SushimsEngine")
+            print("id author Sushim Malla")
             print("uciok")
 
         elif received == "isready":
@@ -31,8 +31,19 @@ def start():
                         board.push_uci(move_str)
 
             elif "fen" in tokens:
-                # Optional: handle custom FEN positions later
-                pass
+                fen_index = tokens.index("fen") + 1
+                fen_parts = []
+                for part in tokens[fen_index:]:
+                    if part == "moves":
+                        break
+                    fen_parts.append(part)
+                fen = " ".join(fen_parts)
+                board.set_fen(fen)
+
+                if "moves" in tokens:
+                    moves_index = tokens.index("moves") + 1 + len(fen_parts)
+                    for move_str in tokens[moves_index:]:
+                        board.push_uci(move_str)
 
         elif received == "ucinewgame":
             board = chess.Board()

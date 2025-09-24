@@ -88,36 +88,6 @@ def evaluate(board: chess.Board) -> float:
         
         if board.outcome().result == "0-1":
             return -CHECKMATE
-    
-    if (
-        board.is_stalemate()
-        or board.is_insufficient_material()
-        or board.can_claim_fifty_moves()
-        or board.can_claim_threefold_repetition()
-    ):
-        return 0
-
-    # evaluate based on material and positioning
-    for square, piece in board.piece_map().items():
-        if piece.color == chess.WHITE:
-            eval += PIECE_VALUES[piece.piece_type]
-            eval += PIECE_SQUARE_TABLES[piece.piece_type][square]
-        else:
-            eval -= PIECE_VALUES[piece.piece_type]
-            eval -= (PIECE_SQUARE_TABLES[piece.piece_type][::-1])[square]
-
-
-    if board.is_check():
-        if board.turn == chess.WHITE:
-            eval += 100
-        else:
-            eval -= 100
-
-    if board.has_castling_rights(chess.WHITE):
-        eval += 20
-    
-    if board.has_castling_rights(chess.BLACK):
-        eval -= 20
 
     return eval
 

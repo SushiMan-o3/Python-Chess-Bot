@@ -1,4 +1,5 @@
 import chess
+import math
 from evaluation import PIECE_VALUES, CHECKMATE, evaluate
 from typing import Tuple
 import json
@@ -13,24 +14,21 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
     
     def _helper(board: chess.Board, depth: int, alpha, beta, current_player: chess.Color) -> Tuple[int, chess.Move]:
         """
-        Helper that finds best move. Used for recurisve purposes. 
+        Helper that finds the best move using minimax with alpha-beta pruning. 
         """
-        if board.is_checkmate():
-            if current_player == original_player:
-                return -CHECKMATE + (original_depth - depth), None
-            else:
-                return CHECKMATE - (original_depth - depth), None
+        # base cases
+        outcome = board.outcome()
+
+        if outcome is not None:
+            if outcome.winner is None:
+                return 0, None
             
-        if board.is_variant_draw():
-            return 0, None
-        
-        if (
-            board.is_stalemate()
-            or board.is_insufficient_material()
-            or board.can_claim_fifty_moves()
-            or board.can_claim_threefold_repetition()
-        ):
-            return 0, None
+            depth_factor = original_depth - depth
+
+            if outcome.winner == original_player:
+                return CHECKMATE - depth_factor, None
+            else:
+                return -CHECKMATE + depth_factor, None
 
         if depth == 0:
             eval_of_pos = evaluate(board)
@@ -48,7 +46,6 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
                 PIECE_VALUES.get(board.piece_type_at(move.from_square), 0)
             )
         )
-
 
         if legal_moves == []:
             best_move = None

@@ -10,7 +10,7 @@ PIECE_VALUES = {
         chess.KING: 0
     }
 
-# piece square tables for white, not to use it for black, just iterate through it the backwards [::-1]
+# Piece square tables for white, not to use it for black
 PIECE_SQUARE_TABLES = {
     chess.PAWN: [
          0,   0,   0,   0,   0,   0,   0,   0,
@@ -93,9 +93,10 @@ def evaluate(board: chess.Board) -> float:
         if board.outcome().result == "0-1":
             return -CHECKMATE
 
+    # Evaluate material and position based on piece-square tables
     for square in chess.SQUARES:
         piece = board.piece_at(square)
-        
+
         if piece is not None:
             value = PIECE_VALUES[piece.piece_type]
             if piece.color == chess.WHITE:

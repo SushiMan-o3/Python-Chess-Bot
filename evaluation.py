@@ -82,12 +82,28 @@ def evaluate(board: chess.Board) -> float:
     """
     eval = 0
 
+    # Checks if the game is over
     if board.outcome() is not None:
+        if board.outcome().winner is None:
+            return 0
+        
         if board.outcome().result == "1-0":
             return CHECKMATE
         
         if board.outcome().result == "0-1":
             return -CHECKMATE
+
+    for square in chess.SQUARES:
+        piece = board.piece_at(square)
+        
+        if piece is not None:
+            value = PIECE_VALUES[piece.piece_type]
+            if piece.color == chess.WHITE:
+                eval += value
+                eval += PIECE_SQUARE_TABLES[piece.piece_type][square]
+            else:
+                eval -= value
+                eval -= PIECE_SQUARE_TABLES[piece.piece_type][chess.square_mirror(square)]
 
     return eval
 

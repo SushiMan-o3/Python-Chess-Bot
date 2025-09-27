@@ -1,5 +1,4 @@
 import chess
-import json
 
 PIECE_VALUES = {
         chess.PAWN: 100,
@@ -105,6 +104,45 @@ def evaluate(board: chess.Board) -> float:
             else:
                 eval -= value
                 eval -= PIECE_SQUARE_TABLES[piece.piece_type][chess.square_mirror(square)]
+
+    # Checks if the king is in check
+    if board.is_check():
+        if board.turn == chess.WHITE:
+            eval -= 50
+        else:
+            eval += 50
+        
+    # Checks for king safety on both sides
+    if board.has_kingside_castling_rights(chess.WHITE):
+        eval += 30
+    if board.has_queenside_castling_rights(chess.WHITE):
+        eval += 30
+    if board.has_kingside_castling_rights(chess.BLACK):
+        eval -= 30
+    if board.has_queenside_castling_rights(chess.BLACK):
+        eval -= 30
+
+
+    # Checks for bishop pair
+    if len(board.pieces(chess.BISHOP, chess.WHITE)) >= 2:
+        eval += 50
+    if len(board.pieces(chess.BISHOP, chess.BLACK)) >= 2:
+        eval -= 50
+
+    # Checks for knight pair
+    if len(board.pieces(chess.KNIGHT, chess.WHITE)) >= 2:
+        eval += 50
+    if len(board.pieces(chess.KNIGHT, chess.BLACK)) >= 2:
+        eval -= 50
+
+    # Checks for rook pair
+    if len(board.pieces(chess.ROOK, chess.WHITE)) >= 2:
+        eval += 50
+    if len(board.pieces(chess.ROOK, chess.BLACK)) >= 2:
+        eval -= 50
+
+    # checks the mobility of each piece
+    # Checks whether pawns are double or triple, isolated, protected, etc. 
 
     return eval
 

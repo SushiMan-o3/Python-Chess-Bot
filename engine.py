@@ -10,9 +10,6 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
     """
     Get the best move for the current player using a simple evaluation function.
     """
-    assert maximizing_player == board.turn, \
-        f"maximizing_player ({maximizing_player}) must equal board.turn ({board.turn}) at root"
-    
     original_player = maximizing_player
     original_depth = depth
     
@@ -80,5 +77,6 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
                 return opening_book[board.fen()]
     except FileNotFoundError:
         pass
+
 
     return _helper(board, depth, float("-inf"), float("inf"))[1]

@@ -3,6 +3,7 @@ import math
 from evaluation import PIECE_VALUES, CHECKMATE, evaluate
 from typing import Tuple
 from utils import list_of_sorted_moves
+import random
 import json
 
 
@@ -74,7 +75,7 @@ def get_best_move(board: chess.Board, depth: int, maximizing_player: chess.Color
         with open('opening_book.json', 'r') as file:
             opening_book = json.load(file)
             if board.fen() in opening_book:
-                return opening_book[board.fen()]
+                return random.choice(opening_book[board.fen()])
     except FileNotFoundError:
         pass
 

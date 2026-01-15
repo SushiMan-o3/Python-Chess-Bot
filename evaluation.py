@@ -209,7 +209,6 @@ def _mobility(board: chess.Board) -> int:
     return white_moves - black_moves
 
 def evaluate(board: chess.Board) -> float:
-    # Game over?
     outcome = board.outcome()
     if outcome is not None:
         if outcome.winner is None:
@@ -220,7 +219,7 @@ def evaluate(board: chess.Board) -> float:
 
     score = 0
 
-    # Material + PST (with king blended MG/EG)
+    # Material + PST
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece is None:
@@ -247,7 +246,7 @@ def evaluate(board: chess.Board) -> float:
             else:
                 score -= PIECE_SQUARE_TABLES[pt][msq]
 
-    # Check bonus/penalty (small)
+    # Check bonus/penalty
     if board.is_check():
         score += 30 if board.turn == chess.BLACK else -30  # if black to move and in check, good for white
 
@@ -265,10 +264,10 @@ def evaluate(board: chess.Board) -> float:
     score += _rook_activity(board, chess.WHITE)
     score -= _rook_activity(board, chess.BLACK)
 
-    # Mobility (scale down so it doesn't dominate)
+    # Mobility 
     score += 2 * _mobility(board)
 
-    # Castling rights: keep small (they're a proxy)
+    # Castling rights: keep small 
     if board.has_kingside_castling_rights(chess.WHITE) or board.has_queenside_castling_rights(chess.WHITE):
         score += 10
     if board.has_kingside_castling_rights(chess.BLACK) or board.has_queenside_castling_rights(chess.BLACK):
